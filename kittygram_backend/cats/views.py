@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .models import Achievement, Cat, Duel, Vote
 from rest_framework.decorators import action
-from .serializers import CatSerializer, AchievementSerializer, DuelSerializer, VoteSerializer
+from .serializers import CatSerializer, AchievementSerializer, DuelSerializer, VoteSerializer, DuelResultSerializer
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from rest_framework import status
