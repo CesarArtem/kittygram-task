@@ -8,6 +8,7 @@ import loginIcon from "../../images/login.svg";
 import plusIcon from "../../images/plus.svg";
 import logoutIcon from "../../images/logout.svg";
 import logo from "../../images/logo.svg";
+import duelIcon from "../../images/duels.svg";
 
 import { ButtonHeader } from "../ui/button-header/button-header";
 import { ButtonSecondary } from "../ui/button-secondary/button-secondary";
@@ -48,6 +49,12 @@ export const Header = ({ setQueryPage, extraClass = "" }) => {
             to="/cats/add"
             text="Добавить кота"
             icon={plusIcon}
+            isLogin={true}
+          />
+          <ButtonHeader
+            to="/duels"
+            text="Дуэли"
+            icon={duelIcon}
             isLogin={true}
           />
           <ButtonSecondary icon={logoutIcon} onClick={handleLogout} />

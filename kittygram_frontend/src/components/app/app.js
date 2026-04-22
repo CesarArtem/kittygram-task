@@ -15,6 +15,11 @@ import { CardPage } from "../card-page/card-page";
 import { AddCardPage } from "../add-card-page/add-card-page";
 import { EditCardPage } from "../edit-card-page/edit-card-page";
 
+// Импорты компонентов дуэлей
+import { DuelList } from "../duels/duel-list";
+import { DuelDetail } from "../duels/duel-detail";
+import { CreateDuel } from "../duels/create-duel";
+
 import styles from "./app.module.css";
 
 function App() {
@@ -28,6 +33,7 @@ function App() {
       getUser().then((res) => {
         if (res && res.id) {
           setUserState({ id: res.id });
+          localStorage.setItem("user_id", res.id);
         }
       });
     }
@@ -57,6 +63,15 @@ function App() {
               </ProtectedRoute>
               <ProtectedRoute path="/cats/:id">
                 <CardPage data={currentCard} setData={setCurrentCard} />
+              </ProtectedRoute>
+              <ProtectedRoute exact path="/duels">
+                <DuelList />
+              </ProtectedRoute>
+              <ProtectedRoute path="/duels/create">
+                <CreateDuel />
+              </ProtectedRoute>
+              <ProtectedRoute path="/duels/:id">
+                <DuelDetail />
               </ProtectedRoute>
             </Switch>
           </main>

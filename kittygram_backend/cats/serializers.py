@@ -6,8 +6,68 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 import webcolors
 
-from .models import Achievement, AchievementCat, Cat
+from .models import Achievement, AchievementCat, Cat, Duel, Vote
 
+class DuelSerializer(serializers.ModelSerializer):
+    cat_a_name = serializers.StringRelatedField(source='cat_a', read_only=True)
+    cat_b_name = serializers.StringRelatedField(source='cat_b', read_only=True)
+    created_by_username = serializers.StringRelatedField(source='created_by', read_only=True)
+    votes_a = serializers.SerializerMethodField()
+    votes_b = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Duel
+        fields = [
+            'id', 'cat_a', 'cat_b', 'cat_a_name', 'cat_b_name',
+            'status', 'created_by', 'created_by_username',
+            'created_at', 'updated_at', 'votes_a', 'votes_b'
+        ]
+        read_only_fields = ['created_by', 'status', 'created_at', 'updated_at']
+
+    def get_votes_a(self, obj):
+        return obj.votes.filter(chosen_cat=obj.cat_a).count()
+
+    def get_votes_b(self, obj):
+        return obj.votes.filter(chosen_cat=obj.cat_b).count()
+
+    def validate(self, data):
+        """Валидация на уровне сериализатора"""
+        cat_a = data.get('cat_a')
+        cat_b = data.get('cat_b')
+        
+        if cat_a == cat_b:
+            raise serializers.ValidationError('Кот не может сражаться сам с собой')
+        
+        if cat_a.owner == cat_b.owner:
+            raise serializers.ValidationError('Коты должны принадлежать разным владельцам')
+        
+        return data
+
+    def create(self, validated_data):
+        validated_data['created_by'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = ['id', 'chosen_cat', 'voted_at']
+        read_only_fields = ['user', 'voted_at']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+class DuelResultSerializer(serializers.Serializer):
+    """Сериализатор для результатов дуэли"""
+    duel_id = serializers.IntegerField()
+    cat_a = serializers.StringRelatedField()
+    cat_b = serializers.StringRelatedField()
+    votes_a = serializers.IntegerField()
+    votes_b = serializers.IntegerField()
+    winner = serializers.StringRelatedField(allow_null=True)
+    status = serializers.CharField()
 
 class Hex2NameColor(serializers.Field):
     def to_representation(self, value):

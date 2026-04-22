@@ -8,8 +8,7 @@ from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-
-from cats.views import AchievementViewSet, CatViewSet
+from cats.views import AchievementViewSet, CatViewSet, DuelViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,6 +25,7 @@ schema_view = get_schema_view(
 router = routers.DefaultRouter()
 router.register(r'cats', CatViewSet)
 router.register(r'achievements', AchievementViewSet)
+router.register(r'duels', DuelViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
