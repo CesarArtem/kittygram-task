@@ -39,7 +39,7 @@ jobs:
           pip install -r kittygram_backend/requirements.txt
       
       - name: Lint with ruff
-        run: ruff check backend/
+        run: ruff check kittygram_backend/
       
       - name: Run backend tests
         env:
@@ -69,7 +69,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd kittygram_frontend
-          npm ci
+          npm install
       
       - name: Run frontend tests
         run: |
