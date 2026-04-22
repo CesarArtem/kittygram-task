@@ -3,8 +3,6 @@ name: Kittygram CI/CD
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   # ========== ТЕСТИРОВАНИЕ БЭКЕНДА ==========
@@ -76,7 +74,7 @@ jobs:
           cd kittygram_frontend
           npm test -- --passWithNoTests || true
 
-  # ========== СБОРКА И ПУШ ОБРАЗА БЭКЕНДА ==========
+  # ========== СБОРКА ОБРАЗА БЭКЕНДА ==========
   build_backend:
     name: Build and push backend image
     runs-on: ubuntu-latest
@@ -102,7 +100,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_backend:latest
 
-  # ========== СБОРКА И ПУШ ОБРАЗА ФРОНТЕНДА ==========
+  # ========== СБОРКА ОБРАЗА ФРОНТЕНДА ==========
   build_frontend:
     name: Build and push frontend image
     runs-on: ubuntu-latest
@@ -128,7 +126,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_frontend:latest
 
-  # ========== СБОРКА И ПУШ ОБРАЗА NGINX ==========
+  # ========== СБОРКА ОБРАЗА NGINX ==========
   build_nginx:
     name: Build and push nginx image
     runs-on: ubuntu-latest
