@@ -28,7 +28,6 @@ class DuelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Создаём голос вручную через модель
         try:
             vote = Vote.objects.create(
                 duel=duel,
@@ -66,6 +65,28 @@ class DuelViewSet(viewsets.ModelViewSet):
                 data['winner'] = duel.cat_b
         serializer = DuelResultSerializer(data)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def close(self, request, pk=None):
+        duel = self.get_object()
+        
+        if duel.status != 'active':
+            return Response(
+                {"error": "Дуэль уже завершена"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if duel.created_by != request.user and not request.user.is_staff:
+            return Response(
+                {"error": "Только создатель дуэли или администратор может её завершить"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        duel.status = 'closed'
+        duel.save()
+        
+        serializer = self.get_serializer(duel)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
