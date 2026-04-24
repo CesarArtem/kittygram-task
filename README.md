@@ -1,36 +1,73 @@
-# Kittygram 🐱
+# Запуск Kittygram с помощью Docker
 
-Kittygram — это веб-приложение для управления котиками с возможностью создавать дуэли между питомцами, голосовать и следить за рейтингом.
+## Требования
+- Установленные Docker и Docker Compose
+- Git (для клонирования репозитория)
 
-## 🚀 Возможности
+## Быстрый старт
 
-- Регистрация и аутентификация пользователей (JWT)
-- CRUD операции для котиков (с фотографиями в Base64)
-- Управление достижениями котиков
-- **Дуэли котов**:
-  - Создание дуэлей между котами
-  - Голосование за понравившегося кота
-  - Просмотр результатов
-- Фильтрация, поиск и пагинация
-- Документация API (Swagger/ReDoc)
+1. Клонировать репозиторий и перейти в папку проекта:
+   ```bash
+   git clone <url-репозитория>
+   cd kittygram_my
+   ```
 
-## 📦 Технологии
+2. Создать файл `.env` на основе примера:
+   ```bash
+   cp .env.example .env
+   ```
+   Отредактировать `.env`, указав свои значения (пароль базы данных, секретный ключ Django и т.д.).  
+   Поле `ALLOWED_HOSTS` должно содержать `localhost` и `127.0.0.1`.
 
-### Бэкенд
-- Python 3.10
-- Django 4.2
-- Django REST Framework
-- JWT (Djoser + SimpleJWT)
+3. Запустить сборку и запуск контейнеров:
+   ```bash
+   docker-compose -f docker-compose.production.yml up -d --build
+   ```
 
-### Фронтенд
-- React 18
-- React Router DOM
-- CSS Modules
+4. Применить миграции базы данных:
+   ```bash
+   docker-compose -f docker-compose.production.yml exec backend python manage.py migrate
+   ```
 
-## 🛠 Установка и запуск
+5. Собрать статические файлы:
+   ```bash
+   docker-compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput
+   ```
 
-### Предварительные требования
+6. (Опционально) Создать суперпользователя для входа в админку:
+   ```bash
+   docker-compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
+   ```
 
-- Python 3.10+
-- Node.js 18+
-- Docker и Docker Compose (опционально)
+## Проверка работы
+
+- Открыть в браузере: `http://localhost` – главная страница Kittygram
+- Админка: `http://localhost/admin`
+- Документация API: `http://localhost/swagger/` или `http://localhost/redoc/`
+- Пример запроса к API: `curl http://localhost/api/duels/`
+
+## Остановка и удаление контейнеров
+
+```bash
+docker-compose -f docker-compose.production.yml down
+```
+
+Чтобы удалить также тома с данными (база, статика):
+```bash
+docker-compose -f docker-compose.production.yml down -v
+```
+
+## Возможные проблемы и решения
+
+- **Порт 80 уже занят** – измените порт в файле `docker-compose.production.yml` для сервиса `nginx`:
+  ```yaml
+  ports:
+    - "8080:80"
+  ```
+  Тогда приложение будет доступно по адресу `http://localhost:8080`.
+
+- **Ошибка `Permission denied` при запуске** – убедитесь, что Docker Desktop запущен (Windows/macOS) или добавьте пользователя в группу `docker` (Linux).
+
+- **Статика не подгружается** – после обновления кода перезапустите контейнеры с флагом `--build` и заново выполните `collectstatic`.
+
+Все команды выполняются из корневой директории проекта (там, где лежит `docker-compose.production.yml`).
