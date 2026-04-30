@@ -8,11 +8,17 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from django.db import IntegrityError
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 class DuelViewSet(viewsets.ModelViewSet):
     queryset = Duel.objects.all()
     serializer_class = DuelSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['status']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
