@@ -107,17 +107,10 @@ class CatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cat
         fields = (
-            'id', 'name', 'color', 'birth_year', 'achievements', 'owner', 'age',
+            'id', 'name', 'color', 'birth_year', 'achievements', 'age', 'owner',
             'image'
         )
         read_only_fields = ('owner',)
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Cat.objects.all(),
-                fields=('name', 'owner'),
-                message='У вас уже есть котик с таким именем'
-            )
-        ]
 
     def get_age(self, obj):
         return dt.datetime.now().year - obj.birth_year

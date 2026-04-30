@@ -1,4 +1,4 @@
-export const URL = "http://localhost";
+export const URL = "http://localhost:8000";
 
 export const colorsList = [
   "#FFE4C4",
